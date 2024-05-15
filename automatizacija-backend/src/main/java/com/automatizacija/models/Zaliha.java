@@ -28,7 +28,7 @@ public class Zaliha {
 	private long zaliha_id;
 	
 	@Column(name = "kolicina", nullable = false)
-	private int kolicina;
+	private double kolicina;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "mera", nullable = false)

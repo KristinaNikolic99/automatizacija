@@ -1,0 +1,69 @@
+.proizvodnja{
+    background: url('../../Components/Assets/background8.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding-top: 29px;
+    padding-bottom: 55px;
+}
+
+.wrapper {
+    width: 520px;
+    border: 2px solid black;
+    color: #fff;
+    border-radius: 10px;
+    padding: 30px 40px;
+    margin-top: 100px;
+}
+
+.wrapper h1{
+    font-size: 36px;
+    text-align: center;
+    color: black;
+}
+
+.wrapper .input-box{
+    position: relative;
+    width: 100%;
+    height: 60px;
+    margin: 30px 0;
+}
+
+.input-box input[type='text'], input[type='number'], select { 
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: 2px solid black;
+    outline: none;
+    border-radius: 40px;
+    font-size: 16px;
+    color: black;
+    padding: 20px 45px 20px 20px;
+}
+
+.input-box input::placeholder {
+    color: black;
+}
+
+.wrapper button {
+    width: 100%;
+    height: 45px;
+    background:  #FDDA0D;
+    border: none;
+    outline: none;
+    border-radius: 45px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+    cursor: pointer;
+    font-size: 16px;
+    color: #333;
+    font-weight: 700;
+}
+
+.wrapper button:hover {
+    background: yellow;
+}

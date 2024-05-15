@@ -1,19 +1,31 @@
 package com.automatizacija.services;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.automatizacija.dtos.KorisnikDto;
+import com.automatizacija.email.EmailService;
+import com.automatizacija.email.EmailToken;
+import com.automatizacija.email.EmailTokenService;
 import com.automatizacija.models.Korisnik;
 import com.automatizacija.models.TipKorisnika;
 import com.automatizacija.repositories.KorisnikRepository;
 
 @Service
-public class KorisnikService {
+public class KorisnikService implements UserDetailsService {
 
 	@Autowired
 	private KorisnikRepository korisnikRepository;
@@ -23,6 +35,25 @@ public class KorisnikService {
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private EmailTokenService emailTokenService;
+	
+	@Autowired
+	private EmailService emailService;
+	
+	@Override
+	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+		Korisnik korisnik = korisnikRepository.findByEmail(email);
+        if(korisnik==null){
+            throw new UsernameNotFoundException("Korisnik nije pronadjen u bazi" + email);
+        } else if(korisnik.isStatusNaloga() == false){
+            throw new UsernameNotFoundException("Korisnik nije aktivirao svoj nalog preko email-a");
+        }
+        Collection<SimpleGrantedAuthority> authority = new ArrayList<>();
+        authority.add(new SimpleGrantedAuthority(korisnik.getTipKorisnika().toString()));
+        return new User(korisnik.getEmail(),korisnik.getPassword(), authority);
+	}
 	
 	public List<Korisnik> getAllKorisniks() {
 		return korisnikRepository.findAll();
@@ -39,6 +70,12 @@ public class KorisnikService {
 		if (korisnikRepository.findByEmail(korisnik.getEmail()) != null) {
 			return null;
 		}
+		String token = UUID.randomUUID().toString();
+		EmailToken emailToken = new EmailToken(token, LocalDateTime.now(),LocalDateTime.now().plusMinutes(15), korisnik);
+		emailTokenService.saveEmailToken(emailToken);
+		String link = "http://localhost:8080/api/confirm?token=" + token;
+		emailService.send(korisnik.getEmail(),
+                emailService.emailKreiranje(korisnik.getIme(),link));
 		return korisnikRepository.save(korisnik);
 	}
 	
@@ -70,5 +107,26 @@ public class KorisnikService {
 			return korisnik;
 		}
 		return null;
+	}
+	
+	public String confirmEmailToken(String token) {
+		EmailToken emailToken = emailTokenService.getEmailToken(token);
+		
+		 if(emailToken == null){
+	         throw new IllegalStateException("Token nije validan");
+
+	     }
+	     if (emailToken.getDatumPotvrde() != null){
+
+	         throw new IllegalStateException("Email je vec verifikovan");
+	     }
+         if(emailToken.getDatumIsticanja().isBefore(LocalDateTime.now())){
+             throw new IllegalStateException("Token je istekao");
+         }
+         Korisnik korisnik = emailToken.getKorisnik();
+         korisnik.setStatusNaloga(true);
+         emailTokenService.updateDatumPotvrde(emailToken);
+         korisnikRepository.save(korisnik);
+         return "Korisnik je uspesno verifikovao svoj email";
 	}
 }

@@ -11,6 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ProizvodnjaDto {
 
-	private String masina;
+	private long masina_id;
 	private long sok_id;
 }

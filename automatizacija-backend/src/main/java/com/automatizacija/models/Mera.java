@@ -4,5 +4,6 @@ public enum Mera {
 	
 	Kilogram,
 	Gram,
-	Komad
+	Komad,
+	Litar
 }

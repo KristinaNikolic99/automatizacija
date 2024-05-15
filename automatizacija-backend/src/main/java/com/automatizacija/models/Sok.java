@@ -40,6 +40,9 @@ public class Sok {
 	@Column(name = "cena", nullable = false)
 	private float cena;
 	
+	@Column(name = "slika", nullable = false)
+	private String slika;
+	
 	@OneToMany(mappedBy = "sok")
 	@JsonIgnore
 	private List<DetaljiSastava> detaljiSastava;

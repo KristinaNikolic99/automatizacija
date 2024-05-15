@@ -1,0 +1,10 @@
+.captcha {
+    position: relative;
+    top: -46px;
+    border: 1px solid black;
+    border-radius: 5px;
+    min-width: 89px;
+    width: fit-content;
+    text-align: center;
+    padding: 5px;
+}

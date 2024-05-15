@@ -41,6 +41,15 @@ public class ProizvodnjaController {
 		return new ResponseEntity<Proizvodnja>(HttpStatus.NOT_FOUND);
 	}
 	
+	@GetMapping("/proizvodnjaSok/{sok_id}")
+	public ResponseEntity<List<Proizvodnja>> getProizvodnjaBySokId(@PathVariable long sok_id) {
+		List<Proizvodnja> proizvodnja =  proizvodnjaService.getProizvodnjaBySokId(sok_id);
+		if(!proizvodnja.isEmpty()) {
+			return new ResponseEntity<List<Proizvodnja>>(proizvodnja, HttpStatus.OK);
+		}
+		return new ResponseEntity<List<Proizvodnja>>(HttpStatus.NOT_FOUND);
+	}
+	
 	@PostMapping("/createProizvodnja")
 	public ResponseEntity<Proizvodnja> createProizvodnja(@RequestBody ProizvodnjaDto proizvodnjaDto) {
 		Proizvodnja proizvodnja = proizvodnjaService.createProizvodnja(proizvodnjaDto);
